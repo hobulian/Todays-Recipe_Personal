@@ -1,0 +1,67 @@
+================= Member Table 생성 ====================
+1. 기존 프로젝트 코드 그대로 생성
+
+================== Goods Table 생성 ====================
+1. 마켓컬리 사이트의 5개 카테고리를 이용
+2. 각각의 카테고리별 약 30개씩 가져와서 생성
+3. 기존 프로젝트의 Goods 테이블을 이용
+4. 기존 속성인 gContents 삭제
+5. 새로운 속성 gUnit(판매단위) gWeight(중량/용량) 생성
+
+==================== DTO 수정 ========================
+1. GoodsDTO를 수정한 Goods 테이블에 맞게 수정
+	1) gContents 삭제
+	2) gUnit 생성
+	3) gWeight 생성
+
+================== 메인 화면 변경 =======================
+1. menu.jsp 수정
+<a href="goodsList?gCategory=Vegetable">채소</a>&nbsp;
+<a href="goodsList?gCategory=Fruit">과일·견과·쌀</a>&nbsp;
+<a href="goodsList?gCategory=Seafood">수산·해산·건어물</a>&nbsp;
+<a href="goodsList?gCategory=Meat">정육·계란</a>&nbsp;
+<a href="goodsList?gCategory=Noodle">면·양념·오일</a>&nbsp;
+
+2. GoodsController의 goodsList 수정
+	1) 기본 값을 Vegetable로 수정
+	2) GoodsMapper의 SQL문 수정(gContents삭제, gUnit, gWeight추가)
+		- 간단하게 *로 수정
+
+3. MainController의 goodsList 수정
+	1) 기본 값을 Vegetable로 수정
+
+4. goods > goodsList.jsp 수정
+	1) gContents 출력부분 삭제
+	2) gUnit, gWeight 출력 부분 추가
+		- 중량이 없는 상품에 대한 예외처리
+
+5. LoginController의 login 수정
+	1) 기본 값을 Vegetable로 수정
+
+=============== 제품 상세 화면 변경 =======================
+1. 제품코드 출력 위치 변경
+2. 제품 이름 크게 변경
+3. 상품 정보 출력 글자 삭제
+4. 옵션은 따로 없으므로 옵션 선택 부분 삭제(gSize, gColor 삭제)
+5. 판매단위, 중량/용량 항목 추가
+	- 중량이 없는 상품에 대한 예외처리
+6. 구매 버튼은 삭제, 장바구니 담기 기능만 유지
+
+=============== 장바구니 담기 변경 =======================
+1. 삭제된 옵션 gSize, gColor에 대한 처리
+	1) DB에 Cart테이블생성: gColor, gSize 속성 제외하고 생성
+	2) CartDTO에서 gColor, gSize삭제
+	3) CartMapper수정
+	4) DB에 OrderInfo테이블 생성: gColor, gSize 속성 제외하고 생성
+	4) OrderDTO에서 gColor, gSize삭제
+
+============= 장바구니 목록 화면 수정 ======================
+1. cart > cartlist.jsp 수정
+	1) 이미지 확장자 명 변경
+	2) gColor, gSize 출력 부분 삭제
+
+============= 주문 화면 수정 ============================
+1. order > orderconfirm.jsp 수정
+	1) gColor, gSize 삭제
+	2) 이미지 확장자 명 변경
+

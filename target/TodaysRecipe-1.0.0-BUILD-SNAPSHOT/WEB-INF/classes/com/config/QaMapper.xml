@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="QaMapper">
+
+	<select id="selectAll" resultType="QaDTO" parameterType="string">
+		select *
+		from QA
+		where userid = #{userid}
+		order by writeday desc
+	</select>
+
+	<select id="manager_selectAll" resultType="QaDTO">
+		select * from QA
+		order
+		by writeday asc, userid asc
+	</select>
+
+	<select id="selectOne" resultType="QaDTO" parameterType="int">
+		select *
+		from QA
+		where num = #{num}
+	</select>
+
+	<insert id="addQ" parameterType="QaDTO">
+		insert into QA (num, category,
+		title, contents, userid)
+		values (qa_seq.nextval, #{category}, #{title},
+		#{contents}, #{userid})
+	</insert>
+
+	<update id="answerUpdate" parameterType="hashmap">
+		update QA
+		set answer =
+		#{answer}
+		where num = #{num}
+	</update>
+
+	<update id="updateQuestion" parameterType="QaDTO">
+		update QA
+		set category
+		= #{category}, title = #{title}, contents = #{contents}
+		where num =
+		#{num}
+	</update>
+
+	<delete id="deleteQuestion" parameterType="int">
+		delete from QA
+		where
+		num = #{num}
+	</delete>
+
+	<!-- 총 게시글 갯수 출력 -->
+	<select id="countBoard" resultType="int">
+		SELECT COUNT(*) FROM QA
+	</select>
+
+	<!-- 페이징 처리 후 게시글 조회 -->
+	<select id="selectBoard"
+		resultType="QaDTO">
+		SELECT *
+		FROM (
+		SELECT ROWNUM RN, A.*
+		FROM (
+		SELECT *
+		FROM QA
+		ORDER BY writeday DESC
+		) A
+		)
+		WHERE RN BETWEEN #{start} AND #{end}
+	</select>
+	
+</mapper>

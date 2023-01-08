@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="DashBoardMapper">
+
+	<!-- 공지사항 페이지에 총 리스트 가져오기 -->
+	<select id="orderdaySales" resultType="orderdaySalesDTO">
+		select substr(orderday, 0, 10) orderday, SUM(gprice * gamount) sales
+		from orderinfo
+		where status <![CDATA[=]]> '거래완료'
+		group by substr(orderday, 0, 10)
+		order by 1
+	</select>
+	
+	<select id="orderdaySalesMap" parameterType="hashmap" resultType="orderdaySalesDTO">
+		select substr(orderday, 0, 10) orderday, SUM(gprice * gamount) sales
+		from orderinfo
+		where orderday <![CDATA[>=]]> #{startDay} 
+		and orderday <![CDATA[<=]]> #{endDay}
+		and status <![CDATA[=]]> '거래완료'
+		group by substr(orderday, 0, 10)
+		order by 1
+	</select>
+	
+	<select id="totalByCategory" resultType="DashBoardDTO">
+		select gCategory, sum(gPrice*gAmount) TotalPrice
+		from orderinfo
+		group by gCategory
+	</select>
+</mapper>

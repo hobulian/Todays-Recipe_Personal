@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="NoticeMapper">
+
+	
+	<!-- 공지사항 페이지에 총 리스트 가져오기 -->
+	<select id="NoticeList" resultType="NoticeDTO">
+	 select num, rownum, writeday, title, contents, writer , viewcount
+	 from ( select num, writeday, title, contents, writer, viewcount from notice order by writeday )
+	 order by rownum desc
+	</select>
+	
+	<!-- 관리자 로그인 상태에서 공지사항 추가기능 -->
+	<insert id="NoticeAdd" parameterType="NoticeDTO">
+		insert into notice (num, title, writer, writeday, contents)
+		values( notice_SEQ.NEXTVAL,#{title},#{writer}, sysdate, #{contents})
+	</insert>
+	
+	<!-- 관리자 로그인 상태에서 공지사항 수정기능 -->
+	<update id="NoticeUpdate" parameterType="NoticeDTO">
+		update notice
+		set title = #{title}, contents = #{contents}
+		where num = #{num}
+	</update>
+	
+	<!-- 관리자 로그인 상태에서 공지사항 삭제기능 -->
+	<delete id="NoticeDelete" parameterType="int">
+		delete
+		from notice
+		where num = #{num}
+	</delete>
+	
+	<!-- 비로그인,일반회원,곤리자 로그인상태에서 공지글 선택시 글정보 가져오기 -->
+	<select id="NoticeSelect" parameterType="int" resultType="NoticeDTO">
+		select * from notice
+		where num = #{num}
+	</select>
+	
+	<!-- 글 조회시 조회수 증가기능 -->
+	<update id="ViewCount" parameterType="int">
+		update notice
+		set viewcount = viewcount + 1
+		where num = #{num}
+	</update>
+	
+	<!-- 총 게시글 출력기능 -->
+	<select id="CountBoard" resultType="int">
+		select count(*) from notice
+	</select>
+	
+	<!-- 페이징 처리 후 게시글 조회 -->
+	<!-- 서브쿼리 안의 rownum의 경우 실존하는 컬럼명이 아니므로 rn 이라는 alias를 주어 활용해야함 -->
+	<!-- 첫 select문의 B.rn 은 서브쿼리 안의 rownum을 rn - alias준 값을 의미하고 이를 rownumber 라고 새로 alias 지정하여 새 페이지마다 공지사항 번호가 초기화되는것을 막음 -->
+	<select id="SelectBoard" resultType="NoticeDTO">
+		select num, B.rn rownumber, writeday, title, contents, writer , viewcount 
+		from (
+			select rownum rn, A.* 
+				from (
+					select * from notice 
+					order by num desc
+					) A 
+					) B
+		where rn between #{start} and #{end}
+	</select>
+
+
+</mapper>

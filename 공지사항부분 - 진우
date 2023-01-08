@@ -1,0 +1,53 @@
+1. com.config 패키지에 NoticeMapper.xml 추가 ( sql문 작성 )
+2. com.controller 패키지에 NoticeController.java 추가 ( select, insert, update, delete 및 detail (상세보기) 추가 )
+3. com.service 패키지에 NoticeService.java 추가
+4. com.dto 패키지에 NoticeDTO.java 추가
+5. root-context.xml 에 NoticeMapper 및 NoticeDTO 추가 ( 없으면 오류남 )
+6. servlet-context.xml 에 /notice 와 /detail 추가 ( view-controller )
+7. view 단에 notice.jsp 와 detail.jsp 추가
+8. view 아래 폴더 notice 를 만들어 그 안에 notice.jsp 와 detail.jsp 추가 ( 각 파일에서 불러올 페이징이미지 )
+9. DB에 notice 테이블에 writer 와 viewcounter 컬럼 추가
+10. 캐시메모리 부족 때문에 추가할것 ( tomcat 파일 안의  config 폴더 -> context.xml 에   </WatchedResource> 뒤에 추가
+- <Resources cachingAlowed="true" cacheMaxSize="100000" />
+
+ * view(jsp) 에서 id 값 비교를 통해 (if문) 버튼의 유무를 결정하는데 이때 id 값은 로그인할때 (LoginController.java) 담기고 비로그인일때는 안담김
+  - LoginController.java 에서 session.setAttribute("login", dto); 를 통해 담아놓은 로그인정보를 login키를 통해 jsp에서 login.userid 로 비교시 이용
+  
+ * url 주소를 get방식으로 넘길 시 앞에 '/' 이 붙으면 최상위주소로 보내므로 (예: http://localhost:8089/내가 보낼 주소가 붙음 ) , 원하지 않는 경로가 이어질 수 있음
+  - 그래서 jsp에서 '/' 를 빼면 최상위 경로가 아닌 프로젝트이름까지 경로가 붙어서 ( 예:http://localhost:8089/shopMiniMallProject_chul/내가 보낼 주소가 붙음 ) , 페이징 404에러가 안났음
+  
+ * NoticeMapper.xml 에서 페이징처리 구현시 사용하는 SelectBoard 를 만들면서 alias 지정의 의미, 필요성
+  - rownum 은 실제로 존재하는 컬럼이 아닌 oracle에서 번호를 순서대로 나열할 때 사용하는 기능이므로 이를 sql 문에서 활용해 화면에 표현하기 위해서는 alias를 지정해야 함
+  - 서브쿼리문에도 alias를 지정하여 예시와 같이 ( B.rn - alias가 B로 지정된 서브쿼리에서의 rn 이라는 alias로 지정된 rownum을 의미 ) 활용
+  - 서브쿼리를 활용했을 때 제일 바깥쪽에서 select * from 이런 표현같이 * 를 활용해 모든 컬럼을 불러오려고하면 rownum은 실존하는 컬럼이 아니기때문에 화면에는 전부 0으로만 표기됨. ( 그러므로 구체적으로 B.rn 이랄고 명시 )
+ 
+ * button 태그 이용시 부트스트랩을 이용해서 css를 넣어주는 class와 내가 기능을 넣기 위해 사용할 class는 ' ' 띄어쓰기를 통해 여러개를 한 class에 지정할 수 있다. (예: class="btn btn-info deletenotice")
+  - 여기서 btn btn-info 는 부트스트랩,  deletenotice는 삭제기능을 위한 class 이며 단순히 ' ' 띄어쓰기를 하여 구분지어주면 다수의 class 지정이 가능하다는 점
+  
+ * css 폴더의 login.css 파일 내에 submit input 속성에 cursor: pointer 지정하여 마우스오버 시 클릭모션 설정
+ 
+ 11. 회원가입(memberForm) 에서 전화번호에 숫자가 아닌 문자가 입력되면 가입이 안되게끔 numberonly 처리
+ 12. 회원정보수정 (mypage) 에서 전화번호에 숫자가 아닌 문자를 입력 못하게끔 numberonly 처리
+ 13. 장바구니에서 물품선택하지않고 주문버튼 클릭 시 삭제할 항목을 처리하라는 문구가 잘못 처리되는 것 수정
+ 14. 로그인 후 회원정보수정 (mypage) 칸에서 취소버튼 누르면 페이지 이동이 아닌 reset 기능이 작동하는 것을 수정 - 초기화면으로 이동
+ 15. 회원가입 (memberFrom) 칸에서 취소버튼 누르면 페이지 이동이 아닌 reset 기능이 작동하는 것을 수정 - 초기화면으로 이동
+ 16. 장바구니에서 물품의 수량이 0이되는 것을 방지, 최소 수량이 1이며 기존 0으로 수량입력 시 주문이 가능하던 것을 방지 위함
+ 17. 공지사항 게시판(Oracle db) 에 테스트용 더미데이터 30개 insert 문 추가
+ 18. 회원정보관리 페이지(memberEdit) 에서 관리자를 제외한 회원만 리스트가 뿌려지게끔 MemberMapper 에서 조건문 수정
+ 19. 회원정보관리 페이지(memberEdit) 에서 관리자가 회원비밀번호를 수정가능하게끔 MemberMapper 의 memberUpdate 부분 passwd 추가/수정
+ 20. 회원가입(memberForm) 에서 postcode 란에 문자가 입력되지않게끔 numberOnly 를 input에 표기
+ 
+  향후 to do list
+ - 전화번호 란에 숫자 4개만 입력되도록
+ - 회원정보 수정 란에서 우편번호에 숫자만 입력되도록
+ - 장바구니에서 ajax 방식아닌 일반 수량변경방식...
+ 
+ --------------------------------------------------------------------------------------------- 6월 13일, 선생님 피드백 이후 추가기능 구현부분
+ 
+ 21. com.config 패키지에 OrderCheckMapper.xml 추가 ( sql문 작성 )
+ 22. root-context.xml 에 OrderCheckMapper 및
+ 23. top.jsp 에 주문목록 버튼&링크 생성
+ 24. servlet-context.xml 에 /orderCheck 추가 ( view-controller )
+ 25. view 단에 orderCheck.jsp 추가하고 view 아래  order 폴더에 orderCheck.jsp 추가 ( 각 파일에서 불러올 페이징이미지 )
+ 
+ 
